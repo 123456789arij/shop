@@ -3,9 +3,13 @@ import React from 'react';
 import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
 
-import { signInWithGoogle } from '../../firebase/firebase.utils';
+import { auth, signInWithGoogle } from '../../firebase/firebase.utils';
 
-import './sign-in.styles.scss';
+import {
+  SignInContainer,
+  SignInTitle,
+  ButtonsBarContainer
+} from './sign-in.styles';
 
 class SignIn extends React.Component {
   constructor(props) {
@@ -17,10 +21,17 @@ class SignIn extends React.Component {
     };
   }
 
-  handleSubmit = event => {
+  handleSubmit = async event => {
     event.preventDefault();
 
-    this.setState({ email: '', password: '' });
+    const { email, password } = this.state;
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      this.setState({ email: '', password: '' });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   handleChange = event => {
@@ -31,9 +42,9 @@ class SignIn extends React.Component {
 
   render() {
     return (
-      <div className='sign-in'>
-        <h2>JE SUIS DÉJÀ CLIENT</h2>
-        <span>Veuillez insérer votre  email et votre mot de passe  </span>
+      <SignInContainer>
+        <SignInTitle>JE SUIS DÉJÀ CLIENT</SignInTitle>
+        <span>Veuillez insérer votre  email et votre mot de passe</span>
 
         <form onSubmit={this.handleSubmit}>
           <FormInput
@@ -52,14 +63,14 @@ class SignIn extends React.Component {
             label='password'
             required
           />
-          <div className='buttons'>
-            <CustomButton type='submit'>S'enregistrer </CustomButton>
-            <CustomButton type='button' onClick={signInWithGoogle} isGoogleSignIn>
+          <ButtonsBarContainer>
+            <CustomButton type='submit'> S'enregistrer </CustomButton>
+            <CustomButton onClick={signInWithGoogle} isGoogleSignIn>
             S'enregistrer avec google
             </CustomButton>
-          </div>
+          </ButtonsBarContainer>
         </form>
-      </div>
+      </SignInContainer>
     );
   }
 }
